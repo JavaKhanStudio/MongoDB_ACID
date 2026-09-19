@@ -1,0 +1,60 @@
+# Replica set a 3 noeuds : les transactions multi-documents, le writeConcern
+# majority et la lecture sur un secondaire n'existent pas sur un mongod isole.
+name: mongodb-acid
+
+x-noeud: &noeud
+  image: mongo:8.0
+  environment:
+    # MongoDB 8 refuse de demarrer sur un noyau >= 6.19 (SERVER-121912).
+    GLIBC_TUNABLES: glibc.pthread.rseq=1
+  command: ["--replSet", "rsTortues", "--bind_ip_all", "--wiredTigerCacheSizeGB=0.25"]
+  healthcheck:
+    test: ["CMD", "mongosh", "--quiet", "--eval", "db.adminCommand('ping')"]
+    interval: 5s
+    timeout: 5s
+    retries: 20
+    start_period: 20s
+
+services:
+  mongo1:
+    <<: *noeud
+    container_name: acid-mongo1
+    hostname: mongo1
+    ports: ["27031:27017"]
+    volumes:
+      - donnees1:/data/db
+      # Scripts joues avec --file : mongosh lu sur stdin se comporte en REPL.
+      - ../scripts:/projet/scripts:ro,z
+  mongo2:
+    <<: *noeud
+    container_name: acid-mongo2
+    hostname: mongo2
+    ports: ["27032:27017"]
+    volumes:
+      - donnees2:/data/db
+      - ../scripts:/projet/scripts:ro,z
+  mongo3:
+    <<: *noeud
+    container_name: acid-mongo3
+    hostname: mongo3
+    ports: ["27033:27017"]
+    volumes:
+      - donnees3:/data/db
+      - ../scripts:/projet/scripts:ro,z
+
+  rs-init:
+    image: mongo:8.0
+    container_name: acid-rs-init
+    restart: "no"
+    depends_on:
+      mongo1: { condition: service_healthy }
+      mongo2: { condition: service_healthy }
+      mongo3: { condition: service_healthy }
+    volumes:
+      - ../scripts:/projet/scripts:ro,z
+    entrypoint: ["mongosh", "--quiet", "--host", "mongo1", "--file", "/projet/scripts/init-replica.js"]
+
+volumes:
+  donnees1:
+  donnees2:
+  donnees3:
