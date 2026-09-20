@@ -1,0 +1,7 @@
+# Ce dossier est aussi une planche Atelier (board #acid). Ces deux dossiers
+# appartiennent à la planche, pas au projet, et ne sont jamais publiés :
+#   .atelier/  — packs.toml, le texte du contexte de l'étiquette #acid
+#   .claude/   — des liens symboliques vers ~/Documents/GitHub/atelier/skills/
+# Ne pas les déplacer : atelier/projects/acid.toml pointe dessus (root, packs).
+.atelier/
+.claude/
