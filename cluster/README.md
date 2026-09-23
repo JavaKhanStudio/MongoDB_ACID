@@ -1,12 +1,13 @@
 # Replica set et sharded cluster — section « Shard et configuration »
 
 Les deux fichiers `docker-compose.yml` sont **exactement** ceux des slides
-« Le replica set - la configuration » et « Le sharded cluster - la configuration ».
+« Le replica set - le fichier compose » et « Le sharded cluster - le fichier compose ».
 Le Makefile ne fait que taper à ma place les commandes des slides suivantes
 (`rs.initiate`, `sh.addShard`, `sh.shardCollection`…) ; les scripts sont dans `scripts/`.
 
 Il faut Docker (ou Podman avec `docker compose`) et `make`. Image `mongo:7.0`.
-Les deux clusters publient le port 27017 : **un seul à la fois**.
+Aucun des deux ne publie de port : ils tournent à côté du conteneur `mongodb` du cours
+(qui garde le 27017), et l'on parle à chaque nœud avec `docker exec`.
 
 Sous Podman rootless (Fedora) :
 `export DOCKER_HOST=unix://$XDG_RUNTIME_DIR/podman/podman.sock` avant `make`.
@@ -18,14 +19,15 @@ Tout se lance depuis ce dossier `cluster/`. Rien ne gêne le replica set de
 
 ```
 make rs            # 3 mongod, rs.initiate, puis qui est PRIMARY / SECONDARY
-make rs-election   # arrête le primaire : un autre est élu
+make rs-election   # arrête mongo1 : mongo2 ou mongo3 est élu
+make rs-retour     # relance mongo1 : il rattrape, puis reprend la main
 make rs-reparer    # relance les trois nœuds
 make rs-majorite   # arrête deux nœuds : le dernier refuse d'écrire (not primary)
 make rs-arreter    # arrête et efface tout
 ```
 
-Le primaire élu au départ n'est pas forcément `mongo1` : l'élection choisit.
-`make rs-election` arrête donc le primaire du moment, quel qu'il soit.
+`rs.initiate` donne à `mongo1` une `priority: 2` : il est toujours élu au départ, et
+reprend la main quand il revient après `make rs-election`.
 
 ## Le sharded cluster
 
@@ -36,12 +38,13 @@ make shard-demo     # 1000 tortues, _id haché : ~50/50 entre sh1 et sh2,
 make shard-arreter  # arrête et efface tout
 ```
 
-La répartition varie d'une exécution à l'autre (485/515 sur la slide, 521/479 ou
-529/471 ici) : l'`_id` est un ObjectId neuf à chaque fois, donc son hash aussi.
+La répartition varie d'une exécution à l'autre (486/514 sur la slide, 487/513 ou
+521/479 ici) : l'`_id` est un ObjectId neuf à chaque fois, donc son hash aussi.
 
 ## Taper les commandes soi-même
 
 ```
-docker compose -f replica-set/docker-compose.yml exec mongo1 mongosh
-docker compose -f sharded-cluster/docker-compose.yml exec mongos mongosh
+docker exec -it mongo1 mongosh
+docker exec -it mongo2 mongosh "mongodb://mongo1,mongo2,mongo3/tortues?replicaSet=rs0"
+docker exec -it mongos mongosh
 ```

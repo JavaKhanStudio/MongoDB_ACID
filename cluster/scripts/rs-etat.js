@@ -1,2 +1,2 @@
-// Slide « Le replica set »
-rs.status().members.forEach(m => print(m.name, m.stateStr))
+// Slide « Le replica set - la verification »
+printjson(rs.status().members.map(m => m.name + " " + m.stateStr))

@@ -12,6 +12,7 @@
 ```bash
 make demarrer    # 3 noeuds mongo:8.0 + initialisation du replica set rsTortues
 make 1           # puis 2, 3 ... 8
+make shell       # un mongosh sur le replica set, base tortues : c'est là que se tapent les commandes des slides
 ```
 
 Chaque démonstration remet la base `tortues` dans son état de départ : elles se

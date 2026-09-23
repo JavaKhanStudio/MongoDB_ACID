@@ -40,8 +40,9 @@ etat:
 	@docker exec acid-mongo1 mongosh --quiet "$(RS)" --eval \
 	  'rs.status().members.forEach(m => print("  " + m.name.padEnd(14) + m.stateStr))'
 
+# La base va dans l'URI : un nom place apres l'URI, mongosh le lit comme un fichier a jouer.
 shell:
-	$(MONGOSH) tortues
+	docker exec -it acid-mongo1 mongosh --quiet "mongodb://mongo1,mongo2,mongo3/tortues?replicaSet=rsTortues"
 
 # Une demo 6 ou 7 coupee au milieu (Ctrl-C) laisse des secondaires geles par
 # fsyncLock : la replication reste arretee tant qu'on ne les libere pas.

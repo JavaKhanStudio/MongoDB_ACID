@@ -1,15 +1,17 @@
 services:
   config1:
     image: mongo:7.0
-    command: mongod --configsvr --replSet cfg --port 27017 --bind_ip_all
+    container_name: config1
+    command: --configsvr --replSet cfg --port 27017 --bind_ip_all
   shard1:
     image: mongo:7.0
-    command: mongod --shardsvr --replSet sh1 --port 27017 --bind_ip_all
+    container_name: shard1
+    command: --shardsvr --replSet sh1 --port 27017 --bind_ip_all
   shard2:
     image: mongo:7.0
-    command: mongod --shardsvr --replSet sh2 --port 27017 --bind_ip_all
+    container_name: shard2
+    command: --shardsvr --replSet sh2 --port 27017 --bind_ip_all
   mongos:
     image: mongo:7.0
+    container_name: mongos
     command: mongos --configdb cfg/config1:27017 --bind_ip_all
-    ports:
-      - "27017:27017"
