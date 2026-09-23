@@ -18,8 +18,37 @@ make shell       # un mongosh sur le replica set, base tortues : c'est là que s
 Chaque démonstration remet la base `tortues` dans son état de départ : elles se
 jouent dans n'importe quel ordre, autant de fois qu'on veut.
 
+Sous Windows, voir [la section suivante](#sous-windows).
+
 Sous Podman rootless (Fedora) :
 `export DOCKER_HOST=unix://$XDG_RUNTIME_DIR/podman/podman.sock` avant `make`.
+
+---
+
+## Sous Windows
+
+Pas besoin de `make`, ni de WSL. Il faut **Docker Desktop**, installé et lancé,
+et **Git**. Dans PowerShell :
+
+```powershell
+git clone https://github.com/JavaKhanStudio/MongoDB_ACID.git
+cd MongoDB_ACID
+.\make demarrer
+.\make 1
+.\make shell
+```
+
+`.\make` remplace `make` dans **toutes** les commandes de ce README et des slides :
+`.\make 8`, `.\make etat`, `.\make aide`. Dans l'invite de commandes (`cmd`),
+`make 1` suffit. Pour le dossier `cluster/` : `cd cluster`, puis `.\make rs`.
+
+C'est `make.cmd`, à la racine, qui lance `docker/windows.ps1` : les mêmes
+commandes `docker` que le `Makefile`, cible pour cible, et la démo 8 réécrite en
+PowerShell (elle est en bash dans `scripts/08-rollback.sh`). Il passe outre la
+politique d'exécution de PowerShell, qu'on n'a donc pas à toucher.
+
+Sous macOS, les commandes sont celles de Linux ; `make` vient avec les outils en
+ligne de commande de Xcode (`xcode-select --install`).
 
 ---
 
@@ -89,6 +118,7 @@ scripts/00-...07-*.js       les demonstrations, jouees par mongosh --file
 scripts/08-rollback.sh      joue depuis l'hote : il faut couper un reseau
 scripts/debloquer.js        leve les fsyncLock oublies
 Makefile                    make aide
+make.cmd                    le Makefile pour Windows : lance docker/windows.ps1
 cluster/                    replica set et sharded cluster de la section Shard (cd cluster && make aide)
 ```
 

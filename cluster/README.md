@@ -9,6 +9,10 @@ Il faut Docker (ou Podman avec `docker compose`) et `make`. Image `mongo:7.0`.
 Aucun des deux ne publie de port : ils tournent à côté du conteneur `mongodb` du cours
 (qui garde le 27017), et l'on parle à chaque nœud avec `docker exec`.
 
+Sous Windows, sans `make` ni WSL : `.\make rs`, `.\make shard` dans PowerShell, depuis ce
+dossier (`make.cmd` lance `windows.ps1`, les mêmes commandes que le Makefile). Voir
+[« Sous Windows »](../README.md#sous-windows) à la racine.
+
 Sous Podman rootless (Fedora) :
 `export DOCKER_HOST=unix://$XDG_RUNTIME_DIR/podman/podman.sock` avant `make`.
 
