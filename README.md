@@ -1,5 +1,7 @@
 # MongoDB, ACID ou pas ?
 
+<p align="center"><img src="icon.png" width="220" alt="Des flacons de laboratoire sur une paillasse"></p>
+
 > Des démonstrations exécutables, sur un vrai replica set à 3 nœuds, de ce que
 > MongoDB garantit — et de ce qu'il ne garantit pas. Accompagne la section
 > « ACID / BASE » du deck MongoDB. Le domaine est celui du cours : des tortues,
